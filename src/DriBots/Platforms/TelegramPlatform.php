@@ -52,7 +52,8 @@ class TelegramPlatform extends BasePlatform {
     #[Pure] public function parseMessage(array $message): Message {
         return new Message(
             id: $message['message_id'],
-            fromId: $message['chat']['id']
+            fromId: $message['chat']['id'],
+            text: $message['text']
         );
     }
 }
