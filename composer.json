@@ -1,0 +1,35 @@
+{
+  "name": "levkopo/dribots-telegram",
+  "description": "Support library DriBots for telegram",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "levkopo",
+      "email": "levkopoag@gmail.com",
+      "homepage": "https://github.com/levkopo/"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "DriBots\\": "src/DriBots"
+    }
+  },
+
+  "extra": {
+    "branch-alias": {
+      "dev-main": "1.x-dev"
+    }
+  },
+
+  "require": {
+    "php": ">=8.0",
+    "levkopo/dribots": "^1.0",
+    "ext-json": "*",
+    "telegram-bot/api": "^2.3"
+  }
+  ,
+  "require-dev": {
+    "roave/security-advisories": "dev-latest"
+  }
+}
