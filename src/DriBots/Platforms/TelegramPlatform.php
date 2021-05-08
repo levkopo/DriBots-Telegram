@@ -53,6 +53,8 @@ class TelegramPlatform extends BasePlatform {
         return new Message(
             id: $message['message_id'],
             fromId: $message['chat']['id'],
+            ownerId: isset($message['from'])?
+                $message['from']['id']&$message['chat']['id']:0,
             text: $message['text']
         );
     }

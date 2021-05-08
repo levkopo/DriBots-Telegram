@@ -24,9 +24,10 @@
 
   "require": {
     "php": ">=8.0",
-    "levkopo/dribots": "^1.0",
+    "levkopo/dribots": "^1.0.3",
     "ext-json": "*",
-    "telegram-bot/api": "^2.3"
+    "telegram-bot/api": "^2.3",
+    "ext-curl": "*"
   }
   ,
   "require-dev": {
