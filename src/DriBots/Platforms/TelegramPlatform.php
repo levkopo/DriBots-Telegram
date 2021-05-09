@@ -81,7 +81,7 @@ class TelegramPlatform extends BasePlatform {
             fromId: $message['chat']['id'],
             ownerId: isset($message['from'])?
                 $message['from']['id']&$message['chat']['id']:0,
-            text: $message['text']??$message['caption'],
+            text: $message['text']??$message['caption']??"",
             attachment: $this->getAttachment($message)
         );
     }
