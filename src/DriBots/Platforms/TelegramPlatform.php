@@ -18,7 +18,7 @@ class TelegramPlatform extends BasePlatform {
     private BotApi $botApi;
 
     public function __construct(
-        string $BOT_API_TOKEN
+        private string $BOT_API_TOKEN
     ) {
         $this->botApi = new BotApi($BOT_API_TOKEN);
         $this->telegramPlatformProvider = new TelegramPlatformProvider(
@@ -53,6 +53,10 @@ class TelegramPlatform extends BasePlatform {
         return $this->telegramPlatformProvider;
     }
 
+    /**
+     * @throws \TelegramBot\Api\Exception
+     * @throws \TelegramBot\Api\InvalidArgumentException
+     */
     public function getAttachment(array $message): ?Attachment {
         if($message===null) {
             return null;
@@ -62,7 +66,8 @@ class TelegramPlatform extends BasePlatform {
             $photo = $message['photo'][(int) (count($message['photo'])/2)];
 
             return new PhotoAttachment(
-                $this->botApi->getFile($photo['file_id'])->getFilePath(),
+                "https://api.telegram.org/file/bot$this->BOT_API_TOKEN/".
+                    $this->botApi->getFile($photo['file_id'])->getFilePath(),
                 "jpg"
             );
         }
