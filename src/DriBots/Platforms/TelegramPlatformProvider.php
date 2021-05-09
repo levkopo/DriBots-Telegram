@@ -21,13 +21,13 @@ class TelegramPlatformProvider implements BasePlatformProvider {
 
     public function sendMessage(int $toId, string $text, Attachment $attachment = null): Message|false {
         try {
-            if($text!=='') {
-                $message = $this->botApi->sendMessage($toId, $text);
-            }
-
-
             if($attachment instanceof PhotoAttachment){
-                $this->botApi->sendPhoto($toId, new CURLFile($attachment->path));
+                $message = $this->botApi->sendPhoto($toId, new CURLFile($attachment->path),
+                    caption: $text);
+            }else if($text!=='') {
+                $message = $this->botApi->sendMessage($toId, $text);
+            }else {
+                return false;
             }
 
             return new Message(
