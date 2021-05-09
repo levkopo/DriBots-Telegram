@@ -56,8 +56,10 @@ class TelegramPlatform extends BasePlatform {
     public function getAttachment(array $message): ?Attachment {
         if($message===null) {
             return null;
-        }else if(isset($message['photo'])){
-            $photo = $message['photo'][(int) (sizeof($message['photo'])/2)];
+        }
+
+        if(isset($message['photo'])){
+            $photo = $message['photo'][(int) (count($message['photo'])/2)];
 
             return new PhotoAttachment(
                 $this->botApi->getFile($photo['file_id'])->getFilePath(),
@@ -74,7 +76,7 @@ class TelegramPlatform extends BasePlatform {
             fromId: $message['chat']['id'],
             ownerId: isset($message['from'])?
                 $message['from']['id']&$message['chat']['id']:0,
-            text: $message['text'],
+            text: $message['text']??$message['caption'],
             attachment: $this->getAttachment($message)
         );
     }

@@ -27,7 +27,7 @@ class TelegramPlatformProvider implements BasePlatformProvider {
 
 
             if($attachment instanceof PhotoAttachment){
-                $message = $this->botApi->sendPhoto($toId, new CURLFile($attachment->path));
+                $this->botApi->sendPhoto($toId, new CURLFile($attachment->path));
             }
 
             return new Message(
@@ -35,7 +35,7 @@ class TelegramPlatformProvider implements BasePlatformProvider {
                 fromId: $message->getChat()->getId(),
                 ownerId: $message->getFrom()!==null?
                     $message->getFrom()->getId()&$message->getChat()->getId():0,
-                text: $message->getText()
+                text: $message->getText()??$message->getCaption()
             );
         } catch (InvalidArgumentException|Exception) {}
 
