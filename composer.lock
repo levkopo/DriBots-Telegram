@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6df1f05d88bd701cd990e1b159d29e4b",
+    "content-hash": "accbc3d93114cfad8dc54cadb68fbc35",
     "packages": [
         {
             "name": "levkopo/dribots",
@@ -644,8 +644,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.0",
-        "ext-json": "*",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "ext-json": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.1.0"
