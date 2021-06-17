@@ -7,11 +7,15 @@ namespace DriBots\Platforms;
 use CURLFile;
 use DriBots\Data\Attachment;
 use DriBots\Data\Attachments\PhotoAttachment;
+use DriBots\Data\InlineQuery;
+use DriBots\Data\InlineQueryResult;
 use DriBots\Data\Message;
 use DriBots\Data\User;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Exception;
 use TelegramBot\Api\InvalidArgumentException;
+use TelegramBot\Api\Types\Inline\InputMessageContent\Text;
+use TelegramBot\Api\Types\Inline\QueryResult\Article;
 
 class TelegramPlatformProvider implements BasePlatformProvider {
 
@@ -32,7 +36,7 @@ class TelegramPlatformProvider implements BasePlatformProvider {
 
             return new Message(
                 id: $message->getMessageId(),
-                fromId: $message->getChat()->getId(),
+                chatId: $message->getChat()->getId(),
                 ownerId: $message->getFrom()!==null?
                     $message->getFrom()->getId()&$message->getChat()->getId():0,
                 text: $message->getText()??$message->getCaption()
@@ -42,7 +46,21 @@ class TelegramPlatformProvider implements BasePlatformProvider {
         return false;
     }
 
-    public function getUser(int $userId): User|false {
-        return false;
+    public function getUser(int $chatId, int $userId): User|false {
+        $member = $this->botApi->getChatMember($chatId, $userId)
+            ->getUser();
+        return new User($member->getId(), $member->getUsername());
+    }
+
+    public function answerToQuery(InlineQuery $query, InlineQueryResult $inlineQueryResult): bool {
+        try {
+            $this->botApi->answerInlineQuery($query->id, [
+                new Article("1", $inlineQueryResult->title,
+                    description: $inlineQueryResult->description,
+                    inlineKeyboardMarkup: new Text($inlineQueryResult->messageText))]);
+            return true;
+        } catch (Exception) {
+            return false;
+        }
     }
 }

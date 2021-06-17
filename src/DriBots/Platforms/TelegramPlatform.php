@@ -3,13 +3,12 @@
 
 namespace DriBots\Platforms;
 
-
 use DriBots\Data\Attachment;
 use DriBots\Data\Attachments\PhotoAttachment;
 use DriBots\Data\Event;
+use DriBots\Data\InlineQuery;
 use DriBots\Data\Message;
 use DriBots\Data\User;
-use JetBrains\PhpStorm\Pure;
 use JsonException;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Exception;
@@ -43,9 +42,15 @@ class TelegramPlatform extends BasePlatform {
         return "telegram";
     }
 
-    #[Pure] public function getEvent(): Event|false {
+    public function getEvent(): Event|false {
         if(isset($this->data['message'])) {
             return Event::NEW_MESSAGE($this->parseMessage($this->data['message']));
+        }else if(isset($this->data['inline_query'])){
+            return Event::INLINE_QUERY(new InlineQuery(
+                id: $this->data['inline_query']['id'],
+                user: $this->parseUser($this->data['inline_query']['from']),
+                query: $this->data['inline_query']['query'],
+            ));
         }
 
         return false;
@@ -85,7 +90,7 @@ class TelegramPlatform extends BasePlatform {
     public function parseMessage(array $message): Message {
         return new Message(
             id: $message['message_id'],
-            fromId: $message['chat']['id'],
+            chatId: $message['chat']['id'],
             ownerId: $message['from']['id']??0,
             text: $message['text']??$message['caption']??"",
             attachment: $this->getAttachment($message),
