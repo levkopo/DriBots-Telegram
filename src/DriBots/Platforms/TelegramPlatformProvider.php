@@ -57,7 +57,7 @@ class TelegramPlatformProvider implements BasePlatformProvider {
             $this->botApi->answerInlineQuery($query->id, [
                 new Article("1", $inlineQueryResult->title,
                     description: $inlineQueryResult->description,
-                    inlineKeyboardMarkup: new Text($inlineQueryResult->messageText))]);
+                    inputMessageContent: new Text($inlineQueryResult->messageText))]);
             return true;
         } catch (Exception) {
             return false;
