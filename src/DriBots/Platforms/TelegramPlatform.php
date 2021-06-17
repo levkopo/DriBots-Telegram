@@ -8,9 +8,12 @@ use DriBots\Data\Attachment;
 use DriBots\Data\Attachments\PhotoAttachment;
 use DriBots\Data\Event;
 use DriBots\Data\Message;
+use DriBots\Data\User;
 use JetBrains\PhpStorm\Pure;
 use JsonException;
 use TelegramBot\Api\BotApi;
+use TelegramBot\Api\Exception;
+use TelegramBot\Api\InvalidArgumentException;
 
 class TelegramPlatform extends BasePlatform {
     private array $data;
@@ -54,8 +57,8 @@ class TelegramPlatform extends BasePlatform {
     }
 
     /**
-     * @throws \TelegramBot\Api\Exception
-     * @throws \TelegramBot\Api\InvalidArgumentException
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     public function getAttachment(array $message): ?Attachment {
         if($message===null) {
@@ -75,14 +78,25 @@ class TelegramPlatform extends BasePlatform {
         return null;
     }
 
-    #[Pure] public function parseMessage(array $message): Message {
+    /**
+     * @throws Exception
+     * @throws InvalidArgumentException
+     */
+    public function parseMessage(array $message): Message {
         return new Message(
             id: $message['message_id'],
             fromId: $message['chat']['id'],
-            ownerId: isset($message['from'])?
-                $message['from']['id']&$message['chat']['id']:0,
+            ownerId: $message['from']['id']??0,
             text: $message['text']??$message['caption']??"",
-            attachment: $this->getAttachment($message)
+            attachment: $this->getAttachment($message),
+            user: isset($message['from'])?$this->parseUser($message['from']):null
+        );
+    }
+
+    public function parseUser(array $user): User|null{
+        return new User(
+            id: $user['id'],
+            username: $user['username']
         );
     }
 }
