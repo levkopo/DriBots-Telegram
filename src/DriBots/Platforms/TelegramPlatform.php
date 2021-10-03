@@ -3,12 +3,13 @@
 
 namespace DriBots\Platforms;
 
+use DriBots\Attachments\TelegramPhotoAttachment;
 use DriBots\Data\Attachment;
-use DriBots\Data\Attachments\PhotoAttachment;
 use DriBots\Data\Event;
 use DriBots\Data\InlineQuery;
 use DriBots\Data\Message;
 use DriBots\Data\User;
+use JetBrains\PhpStorm\Pure;
 use JsonException;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Exception;
@@ -17,10 +18,10 @@ use TelegramBot\Api\InvalidArgumentException;
 class TelegramPlatform extends BasePlatform {
     private array $data;
     private TelegramPlatformProvider $telegramPlatformProvider;
-    private BotApi $botApi;
+    public BotApi $botApi;
 
     public function __construct(
-        private string $BOT_API_TOKEN
+        public string $BOT_API_TOKEN
     ) {
         $this->botApi = new BotApi($BOT_API_TOKEN);
         $this->telegramPlatformProvider = new TelegramPlatformProvider(
@@ -57,36 +58,20 @@ class TelegramPlatform extends BasePlatform {
     }
 
 
-    public function getPlatformProvider(): ?BasePlatformProvider {
+    public function getPlatformProvider(): BasePlatformProvider {
         return $this->telegramPlatformProvider;
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
     public function getAttachment(array $message): ?Attachment {
-        if($message===null) {
-            return null;
-        }
-
         if(isset($message['photo'])){
             $photo = $message['photo'][(int) (count($message['photo'])/2)];
 
-            return new PhotoAttachment(
-                "https://api.telegram.org/file/bot$this->BOT_API_TOKEN/".
-                    $this->botApi->getFile($photo['file_id'])->getFilePath(),
-                "jpg"
-            );
+            return new TelegramPhotoAttachment($photo['file_id'], $this);
         }
 
         return null;
     }
 
-    /**
-     * @throws Exception
-     * @throws InvalidArgumentException
-     */
     public function parseMessage(array $message): Message {
         return new Message(
             id: $message['message_id'],
@@ -98,7 +83,7 @@ class TelegramPlatform extends BasePlatform {
         );
     }
 
-    public function parseUser(array $user): User|null{
+    #[Pure] public function parseUser(array $user): User|null{
         return new User(
             id: $user['id'],
             username: $user['username']

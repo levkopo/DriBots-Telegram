@@ -11,7 +11,6 @@ use DriBots\Data\InlineQuery;
 use DriBots\Data\InlineQueryResult;
 use DriBots\Data\Message;
 use DriBots\Data\User;
-use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Exception;
 use TelegramBot\Api\InvalidArgumentException;
 use TelegramBot\Api\Types\Inline\InputMessageContent\Text;
@@ -20,16 +19,16 @@ use TelegramBot\Api\Types\Inline\QueryResult\Article;
 class TelegramPlatformProvider implements BasePlatformProvider {
 
     public function __construct(
-        private BotApi $botApi
+        private TelegramPlatform $platform
     ) {}
 
-    public function sendMessage(int $toId, string $text, Attachment $attachment = null): Message|false {
+    public function sendMessage(int $chatId, string $text, Attachment $attachment = null): Message|false {
         try {
             if($attachment instanceof PhotoAttachment){
-                $message = $this->botApi->sendPhoto($toId, new CURLFile($attachment->path),
+                $message = $this->platform->botApi->sendPhoto($chatId, new CURLFile($attachment->getPath()),
                     caption: $text);
             }else if($text!=='') {
-                $message = $this->botApi->sendMessage($toId, $text);
+                $message = $this->platform->botApi->sendMessage($chatId, $text);
             }else {
                 return false;
             }
@@ -47,14 +46,14 @@ class TelegramPlatformProvider implements BasePlatformProvider {
     }
 
     public function getUser(int $chatId, int $userId): User|false {
-        $member = $this->botApi->getChatMember($chatId, $userId)
+        $member = $this->platform->botApi->getChatMember($chatId, $userId)
             ->getUser();
         return new User($member->getId(), $member->getUsername());
     }
 
     public function answerToQuery(InlineQuery $query, InlineQueryResult $inlineQueryResult): bool {
         try {
-            $this->botApi->answerInlineQuery($query->id, [
+            $this->platform->botApi->answerInlineQuery($query->id, [
                 new Article("1", $inlineQueryResult->title,
                     description: $inlineQueryResult->description,
                     inputMessageContent: new Text($inlineQueryResult->messageText))]);
@@ -62,5 +61,9 @@ class TelegramPlatformProvider implements BasePlatformProvider {
         } catch (Exception) {
             return false;
         }
+    }
+
+    public function getAttachmentFromFileId(string $fileId): Attachment|false {
+        return new PhotoAttachment($fileId);
     }
 }
