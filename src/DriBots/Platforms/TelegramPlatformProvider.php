@@ -5,6 +5,7 @@ namespace DriBots\Platforms;
 
 
 use CURLFile;
+use DriBots\Attachments\TelegramPhotoAttachment;
 use DriBots\Data\Attachment;
 use DriBots\Data\Attachments\PhotoAttachment;
 use DriBots\Data\InlineQuery;
@@ -64,6 +65,6 @@ class TelegramPlatformProvider implements BasePlatformProvider {
     }
 
     public function getAttachmentFromFileId(string $fileId): Attachment|false {
-        return new PhotoAttachment($fileId);
+        return new TelegramPhotoAttachment($fileId, $this->platform);
     }
 }

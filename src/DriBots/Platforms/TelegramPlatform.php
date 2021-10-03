@@ -12,8 +12,6 @@ use DriBots\Data\User;
 use JetBrains\PhpStorm\Pure;
 use JsonException;
 use TelegramBot\Api\BotApi;
-use TelegramBot\Api\Exception;
-use TelegramBot\Api\InvalidArgumentException;
 
 class TelegramPlatform extends BasePlatform {
     private array $data;
