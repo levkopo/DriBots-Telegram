@@ -24,9 +24,7 @@ class TelegramPlatform extends BasePlatform {
         public string $BOT_API_TOKEN
     ) {
         $this->botApi = new BotApi($BOT_API_TOKEN);
-        $this->telegramPlatformProvider = new TelegramPlatformProvider(
-            $this->botApi
-        );
+        $this->telegramPlatformProvider = new TelegramPlatformProvider($this);
     }
 
     public function requestIsAccept(): bool {
